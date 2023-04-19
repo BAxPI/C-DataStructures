@@ -12,7 +12,8 @@ typedef struct Node{
 struct LList {
     Node *head; 
     Node *tail; 
-
+    size_t NoElements;
+    // Functions provided by the client.
     LItem (*ctor)(LItem);
     void (*dtor)(LItem);
     int (*compare)(LItem, LItem);  
@@ -26,7 +27,8 @@ LList new_linked_list(LItem (*ctor)(LItem),void (*dtor)(LItem), int (*compare)(L
     }
     new_llist->head = NULL;
     new_llist->tail = NULL;
-    // Functions provided by the client. 
+    new_llist->NoElements = 0;
+
     new_llist->ctor = ctor;
     new_llist->dtor = dtor;
     new_llist->compare = compare;
@@ -53,6 +55,7 @@ void add_node(LList list, LItem item){
         list->head->prev_node = new_node;
         list->head = new_node;
     }
+    list->NoElements++;
 }
 
 /* Deletes first occurence of a node in a linked list */
@@ -75,6 +78,7 @@ void delete_node(LList list, LItem item){
                 list->dtor(ptr->node_content);
             }
             free(ptr);
+            list->NoElements--;
             return;
         }
         ptr = ptr->next_node;
@@ -94,6 +98,26 @@ void destroy_linked_list(LList list){
     }
     free(list);
 }
+
+size_t get_No_elem_LList(LList list){
+    return list->NoElements;
+}
+
+LItem get_element_from_LList(LList list, LItem element){
+    Node *ptr = list->head;
+    if(!list->head){
+        printf("The list is empty!\n");
+    }
+    while(ptr!=NULL){
+        if(list->compare(ptr->node_content, element) == 0){
+            return ptr->node_content;
+        }
+        ptr = ptr->next_node;
+    }
+    printf("The element you're looking for is not in the linked list.\n");
+    return NULL;
+}
+
 
 void print_list(LList list){
     if(!list->print) {
@@ -119,3 +143,24 @@ void print_list(LList list){
     printf("NULL\n");
     printf("\033[0m"); /* Reset */
 }
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
