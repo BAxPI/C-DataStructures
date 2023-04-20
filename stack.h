@@ -1,3 +1,49 @@
+/* 
+    Implements a stack. 
+
+    -----------
+    |   TOP   |
+    -----------
+    -----------
+    |  ITEM2  |
+    -----------
+    -----------
+    |  ITEM3  |
+    -----------
+    The stack is generic and may hold any kind of data (from the same type!) given a proper constructor function for that type.
+
+    =========== Usage ===========
+    -- Defining a type that the stack will hold:  
+        struct Vector3d {
+            int x; int y; int z;
+        }
+    -- Constructor example: 
+        SItem ctor(SItem item){
+            struct Vector3d *vector = (struct Vector3d *)malloc(sizeof(struct Vector3d)); 
+            memcpy(vector, item, sizeof(struct Vector3d));
+            return vector;
+        }
+    -- Destructor example: 
+        void dtor(SItem item){
+            free(item);
+        }
+    -- Comparison example: 
+        int compare(SItem item1, SItem item2){
+            struct Vector3d *elem1 = (struct Vector3d *)item1;
+            struct Vector3d *elem2 = (struct Vector3d *)item2;
+            float size1 = sqrt(elem1->x + elem1->y + elem1->z);
+            float size2 = sqrt(elem2->x + elem2->y + elem2->z);
+
+            return (size1 > size2) - (size1 < size2); 
+        }
+    -- Printing example
+        void print_vector3d(SItem item){
+            printf("(%d, %d, %d)", ((struct Vector3d *)item)->x ,((struct Vector3d *)item)->y, ((struct Vector3d *)item)->z);
+        }
+
+    Created by: @BAxBI as part of General DataStructure library for C.
+*/
+
 #ifndef __STACK__H_
 #define __STACK__H_
 

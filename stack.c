@@ -98,8 +98,7 @@ void print_stack(Stack stack){
     if (!stack->top) {
         printf("The stack is empty!\n");
         return;
-    }
-    s_item *ptr = stack->top;
+    }    s_item *ptr = stack->top;
     while(ptr){
         stack->print(ptr->s_item_content);
         printf(" ---> ");

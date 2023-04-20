@@ -144,23 +144,3 @@ void print_list(LList list){
     printf("\033[0m"); /* Reset */
 }
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
