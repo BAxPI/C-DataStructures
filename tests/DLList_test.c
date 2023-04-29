@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <limits.h>
 
 #ifdef assert
 #undef assert
@@ -28,7 +29,7 @@ void test_start(char *name){
 
 void test_end(){
     if (result) tests_passed++;
-    printf("%s\n", result ? "success" : "fail");
+    printf("%s\n", result ? " success" : " fail");
 }
 
 void exit(int code){
@@ -48,26 +49,31 @@ struct Vector3d{
     int x; int y; int z;
 };
 
-void * ctor(void * item){
-    struct Vector3d *vector = (struct Vector3d *)malloc(sizeof(struct Vector3d)); 
-    memcpy(vector, item, sizeof(struct Vector3d));
+void *ctor(void *item){
+    struct Vector3d *vector = malloc(sizeof(*vector)); 
+    if(vector){
+        memcpy(vector, item, sizeof(struct Vector3d));
+    }
     return vector;
 }
 
-void dtor(void * item){
+void dtor(void *item){
     free(item);
 }
 
-int compare(void * item1, void * item2){
+int compare(void *item1, void *item2){
     struct Vector3d *elem1 = (struct Vector3d *)item1;
     struct Vector3d *elem2 = (struct Vector3d *)item2;
+    if(elem1 == NULL || elem2 == NULL){ 
+        return INT_MIN;
+    }
     float size1 = sqrt(elem1->x*elem1->x + elem1->y*elem1->y + elem1->z*elem1->z);
     float size2 = sqrt(elem2->x*elem2->x + elem2->y*elem2->y + elem2->z*elem2->z);
 
     return (size1 > size2) - (size1 < size2); 
 }
 
-void print_vector3d(void * item){
+void print_vector3d(void *item){
     printf("(%d, %d, %d)", ((struct Vector3d *)item)->x ,((struct Vector3d *)item)->y, ((struct Vector3d *)item)->z);
 }
 
@@ -157,6 +163,49 @@ void DLList_delete_middle(){
     test_end();
 }
 
+void DLList_delete_not_in_list(){
+    struct DLList *my_list = DLList_new(ctor, dtor, compare, print_vector3d);
+    struct Vector3d vector1, vector2, vector3;
+    vector1.x = 5, vector1.y = 5, vector1.z = 5;
+    vector2.x = 10, vector2.y = 10, vector2.z = 5;
+    vector3.x = 10, vector2.y = 120, vector2.z = 5;
+
+    test_start("Node not in the list deletion");
+    should_exit = 1;
+    DLList_add(my_list, &vector1);
+    DLList_add(my_list, &vector2);
+    assert(DLList_delete(my_list, &vector3) == false);
+    DLList_destroy(my_list);
+    test_end();
+}
+
+void DLList_delete_not_matching_obj(){
+    struct DLList *my_list = DLList_new(ctor, dtor, compare, print_vector3d);
+    struct Vector3d vector1, vector2;
+    vector1.x = 5, vector1.y = 5, vector1.z = 5;
+    vector2.x = 10, vector2.y = 10, vector2.z = 5;
+
+    test_start("Delete not matching object");
+    should_exit = 1;
+    DLList_add(my_list, &vector1);
+    DLList_add(my_list, &vector2);
+    int variable = 5;
+    assert(DLList_delete(my_list, &variable) == false);
+    DLList_destroy(my_list);
+    test_end();
+}
+
+void DLList_add_not_matching_obj(){
+    struct DLList *my_list = DLList_new(ctor, dtor, compare, print_vector3d);
+    int num = 5;
+    test_start("Add not matching object");
+    should_exit = 1;
+    assert(DLList_add(my_list, &num) == false);
+    DLList_destroy(my_list);
+    test_end();
+}
+
+
 int main(void){
     num_tests = 0;
     tests_passed = 0;
@@ -171,6 +220,9 @@ int main(void){
     DLList_delete_head();
     DLList_delete_tail();
     DLList_delete_middle();
+    DLList_delete_not_in_list();
+    DLList_delete_not_matching_obj();
+    DLList_add_not_matching_obj();
 
     printf("Total tests passed: %d\n", tests_passed);
     printf("============================================\n");

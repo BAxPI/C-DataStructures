@@ -41,6 +41,7 @@ struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*com
 
 
 int DLList_add(struct DLList *list, void * const item){
+    if(!list->ctor) return false; // If constructor is not provided.
     Node *new_node = malloc(sizeof(*new_node));
     if (!new_node) return false;
     new_node->next_node = NULL;
