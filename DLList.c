@@ -1,46 +1,48 @@
+#include "DLList.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "LinkedList.h"
+
 
 typedef struct Node{
     struct Node *prev_node;
     struct Node *next_node;
-    LItem node_content;
+    void * node_content;
 }Node; 
 
 
-struct LList {
+struct DLList {
     Node *head; 
     Node *tail; 
     size_t NoElements;
     // Functions provided by the client.
-    LItem (*ctor)(LItem);
-    void (*dtor)(LItem);
-    int (*compare)(LItem, LItem);  
-    void (*print)(LItem);
+    void * (*ctor)(void *);
+    void (*dtor)(void *);
+    int (*compare)(void *, void *);  
+    void (*print)(void *);
 };
 
-LList new_linked_list(LItem (*ctor)(LItem),void (*dtor)(LItem), int (*compare)(LItem, LItem), void (*print)(LItem)){
-    LList new_llist = calloc(1, sizeof(struct  LList));
-    if (!new_llist){
+
+struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*compare)(void *, void *), void (*print)(void *)){
+    struct DLList *new_dllist = malloc(sizeof(*new_dllist));
+    if (!new_dllist){
         return NULL;
     }
-    new_llist->head = NULL;
-    new_llist->tail = NULL;
-    new_llist->NoElements = 0;
+    new_dllist->head = NULL;
+    new_dllist->tail = NULL;
+    new_dllist->NoElements = 0;
 
-    new_llist->ctor = ctor;
-    new_llist->dtor = dtor;
-    new_llist->compare = compare;
-    new_llist->print = print;
+    new_dllist->ctor = ctor;
+    new_dllist->dtor = dtor;
+    new_dllist->compare = compare;
+    new_dllist->print = print;
 
-    return new_llist;
+    return new_dllist;
 }
 
 
-void add_node(LList list, LItem item){
-    Node *new_node = (Node *)malloc(sizeof(Node));
-    if (!new_node) return;
+int DLList_add(struct DLList *list, void * const item){
+    Node *new_node = malloc(sizeof(*new_node));
+    if (!new_node) return false;
     new_node->next_node = NULL;
     new_node->prev_node = NULL;
     new_node->node_content = list->ctor(item);
@@ -56,16 +58,20 @@ void add_node(LList list, LItem item){
         list->head = new_node;
     }
     list->NoElements++;
+    return true;
 }
 
 /* Deletes first occurence of a node in a linked list */
-void delete_node(LList list, LItem item){
+int DLList_delete(struct DLList *list, void * const item){
     Node *ptr = list->head;
     while(ptr != NULL){
         if(list->compare(ptr->node_content, item) == 0){
             /* First node to be deleted */
             if(!ptr->prev_node){
                 list->head = ptr->next_node;
+                if(ptr->next_node){
+                    ptr->next_node->prev_node = NULL;
+                }
             }
             else if(ptr->prev_node && ptr->next_node){
                 ptr->next_node->prev_node = ptr->prev_node;
@@ -79,14 +85,16 @@ void delete_node(LList list, LItem item){
             }
             free(ptr);
             list->NoElements--;
-            return;
+            return true;
         }
         ptr = ptr->next_node;
     }
+    return false;
 }
 
 
-void destroy_linked_list(LList list){
+int DLList_destroy(struct DLList * list){
+    if(list){
     Node *ptr = list->head;
     while(ptr != NULL){
         Node *tmp = ptr;
@@ -97,13 +105,15 @@ void destroy_linked_list(LList list){
         free(tmp);
     }
     free(list);
+    return true;
+    }
+    else{
+        return true;
+    }
 }
 
-size_t get_No_elem_LList(LList list){
-    return list->NoElements;
-}
 
-LItem get_element_from_LList(LList list, LItem element){
+void * DLList_get_item(const struct DLList *list, void * const element){
     Node *ptr = list->head;
     if(!list->head){
         printf("The list is empty!\n");
@@ -118,8 +128,12 @@ LItem get_element_from_LList(LList list, LItem element){
     return NULL;
 }
 
+size_t DLList_No_items(const struct DLList *const list){
+    return list->NoElements;
+}
 
-void print_list(LList list){
+
+void DLList_print(const struct DLList * const list){
     if(!list->print) {
         printf("The linked list provided doesn't have print function\n");
         return;
@@ -139,8 +153,6 @@ void print_list(LList list){
         }
         ptr = ptr->next_node;
     }
-    printf("\033[0;31m"); /* Red */
     printf("NULL\n");
-    printf("\033[0m"); /* Reset */
 }
 	
