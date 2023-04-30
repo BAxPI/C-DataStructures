@@ -17,12 +17,12 @@ struct DLList {
     // Functions provided by the client.
     void * (*ctor)(void *);
     void (*dtor)(void *);
-    int (*compare)(void *, void *);  
+    int (*compare)(const void *, const void *);  
     void (*print)(void *);
 };
 
 
-struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*compare)(void *, void *), void (*print)(void *)){
+struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*compare)(const void *, const void *), void (*print)(void *)){
     struct DLList *new_dllist = malloc(sizeof(*new_dllist));
     if (!new_dllist){
         return NULL;
@@ -114,18 +114,20 @@ int DLList_destroy(struct DLList * list){
 }
 
 
-void * DLList_get_item(const struct DLList *list, void * const element){
+void * DLList_get_item(const struct DLList *list, void * const element, int *success){
     Node *ptr = list->head;
     if(!list->head){
         printf("The list is empty!\n");
+        *success = false;
     }
     while(ptr!=NULL){
         if(list->compare(ptr->node_content, element) == 0){
+            *success = true;
             return ptr->node_content;
         }
         ptr = ptr->next_node;
     }
-    printf("The element you're looking for is not in the linked list.\n");
+    *success = false;
     return NULL;
 }
 

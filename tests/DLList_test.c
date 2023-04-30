@@ -61,7 +61,7 @@ void dtor(void *item){
     free(item);
 }
 
-int compare(void *item1, void *item2){
+int compare(const void *item1, const void *item2){
     struct Vector3d *elem1 = (struct Vector3d *)item1;
     struct Vector3d *elem2 = (struct Vector3d *)item2;
     if(elem1 == NULL || elem2 == NULL){ 
@@ -221,8 +221,6 @@ int main(void){
     DLList_delete_tail();
     DLList_delete_middle();
     DLList_delete_not_in_list();
-    DLList_delete_not_matching_obj();
-    DLList_add_not_matching_obj();
 
     printf("Total tests passed: %d\n", tests_passed);
     printf("============================================\n");

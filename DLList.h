@@ -25,7 +25,7 @@ typedef enum {false = 0, true = 1} bool;
     @param print Pointer to a print function of an element in the list. 
     @return Pointer to an emty linked list 
 */
-struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*compare)(void *, void *), void (*print)(void *));
+struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*compare)(const void *, const void *), void (*print)(void *));
 
 /* 
     Adds a node to the head of the list.
@@ -47,8 +47,9 @@ int DLList_destroy(struct DLList *list);
 
 /*
     Gets an element from the Linked List.
+    @param success A pointer to int, will be set to 1 upon sucess 0 otherwise.
 */
-void * DLList_get_item(const struct DLList *list, void * const element);
+void * DLList_get_item(const struct DLList *list, void * const element, int *success);
 
 /*
     Gets the number of elements in the linked list.
