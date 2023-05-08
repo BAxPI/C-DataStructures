@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 typedef struct Node{
     struct Node *prev_node;
     struct Node *next_node;
@@ -96,21 +95,18 @@ int DLList_delete(struct DLList *list, void * const item){
 
 int DLList_destroy(struct DLList * list){
     if(list){
-    Node *ptr = list->head;
-    while(ptr != NULL){
-        Node *tmp = ptr;
-        ptr = ptr->next_node;
-        if(list->dtor){
-            list->dtor(tmp->node_content);
+        Node *ptr = list->head;
+        while(ptr != NULL){
+            Node *tmp = ptr;
+            ptr = ptr->next_node;
+            if(list->dtor){
+                list->dtor(tmp->node_content);
+            }
+            free(tmp);
         }
-        free(tmp);
+        free(list);
     }
-    free(list);
     return true;
-    }
-    else{
-        return true;
-    }
 }
 
 

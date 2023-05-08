@@ -6,16 +6,13 @@
     ----------          ----------           ---------- 
     The linked list is generic and may hold any kind of pointer (from the same type!) given a proper constructor function for that type.
 
-    Created by: @BAxBI as part of General DataStructure library for C.
+    Created by: @BAxBI as part of General Data Structure library for C.
  
 */
 #ifndef __DLLIST__H_
 #define __DLLIST__H_
 #include <stddef.h>
-
-
-typedef enum {false = 0, true = 1} bool;
-
+#include <stdbool.h>
 
 /* 
     Creates a new empty linked list 
@@ -29,7 +26,7 @@ struct DLList *DLList_new(void * (*ctor)(void *),void (*dtor)(void *), int (*com
 
 /* 
     Adds a node to the head of the list.
-    @returns 1 if added successfuly 0 otherwise.
+    @return 1 if added successfuly 0 otherwise.
 */
 int DLList_add(struct DLList *list, void * const item);
 
